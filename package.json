@@ -1,5 +1,5 @@
 {
-  "name": "base64x-js",
+  "name": "base64x",
   "author": {
     "name": "Elad Yosifon",
     "url": "https://github.com/elad-yosifon"
@@ -20,10 +20,15 @@
     "encode",
     "decode"
   ],
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly" : "npm test"
   },
+  "main": "dist/base64x.js",
+  "types": "dist/base64x.d.ts",
   "dependencies": {},
   "sideEffects": false,
   "devDependencies": {
