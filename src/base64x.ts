@@ -3,8 +3,9 @@ type StringTransformer = (input: string) => string;
 const base64Encode: StringTransformer = ((data: string) => Buffer.from(data, 'utf8').toString('base64'));
 const base64Decode: StringTransformer = ((data: string) => Buffer.from(data, 'base64').toString('utf8'));
 
-const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-const CHARSET_CHARS = CHARSET.split('');
+// @see: https://datatracker.ietf.org/doc/html/rfc4648#section-5
+const RFC4648_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+const CHARSET_CHARS = RFC4648_CHARSET.split('');
 
 type LookupTable = { [c: string]: string };
 type ReverseLookupTable = { [c: string]: string };
@@ -31,7 +32,7 @@ export class Base64x {
     const chars = lookupTableString.split('');
     const uniqueChars = new Set(chars);
     if (!CHARSET_CHARS.every(c => uniqueChars.has(c))) {
-      throw new Error(`lookupTableString characters must match ${CHARSET} uniquely.`);
+      throw new Error(`lookupTableString characters must match charset uniquely.`);
     }
 
     this.lookupTable = {};
