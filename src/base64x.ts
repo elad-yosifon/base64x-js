@@ -18,6 +18,20 @@ function reverseShuffleBytes (input: string, lookupTable: ReverseLookupTable): s
   return input.split('').map(c => lookupTable[c] ?? '=').join('');
 }
 
+const deterministicShuffleBySeed = <T> (seed: number, arr: T[]) => {
+  const length = arr.length;
+  const mod = length - 1;
+  for (let i = 0; i < length; i++) {
+    seed ^= (seed << 1);
+    seed &= 0xffffff;
+    const j = seed % mod;
+    const x = arr[i];
+    arr[i] = arr[j];
+    arr[j] = x;
+  }
+  return arr;
+};
+
 export class Base64x {
 
   private readonly lookupTable: LookupTable;
@@ -54,4 +68,10 @@ export class Base64x {
     return base64Decode(reverseShuffleBytes(input, this.reverseLookupTable));
   }
 
+  static fromSeed (seed: number) : Base64x {
+    if (seed < 1 || seed >= Number.MAX_SAFE_INTEGER || !Number.isSafeInteger(seed)) {
+      throw new Error('seed value must be an integer greater than 0 and less than Number.MAX_SAFE_INTEGER.');
+    }
+    return new Base64x(deterministicShuffleBySeed(seed, RFC4648_CHARSET.split("")).join(""));
+  }
 }

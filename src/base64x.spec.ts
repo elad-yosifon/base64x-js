@@ -1,5 +1,5 @@
-import { describe, expect, test } from '@jest/globals';
-import { Base64x } from './base64x';
+import { describe, expect, test } from "@jest/globals";
+import { Base64x } from "./base64x";
 
 describe('Base64x', () => {
 
@@ -41,6 +41,34 @@ describe('Base64x', () => {
     const rawString = 'אלעד';
     const base64x = new Base64x('0123456789abcdefghijklmnopqrstuvwxyz_-ABCDEFGHIJKLMNOPQRSTUVWXYZ');
     expect(base64x.decode(base64x.encode(rawString))).toStrictEqual(rawString);
+  });
+
+  test('seed ctor must be an integer greater than 0 and less than Number.MAX_SAFE_INTEGER', () => {
+    const err = 'seed value must be an integer greater than 0 and less than Number.MAX_SAFE_INTEGER.';
+    expect(() => Base64x.fromSeed(Number.MIN_VALUE)).toThrow(err);
+    expect(() => Base64x.fromSeed(Number.MAX_VALUE)).toThrow(err);
+    expect(() => Base64x.fromSeed(Number.NEGATIVE_INFINITY)).toThrow(err);
+    expect(() => Base64x.fromSeed(Number.POSITIVE_INFINITY)).toThrow(err);
+    expect(() => Base64x.fromSeed(Number.EPSILON)).toThrow(err);
+    expect(() => Base64x.fromSeed(Number.NaN)).toThrow(err);
+    expect(() => Base64x.fromSeed(Number.MAX_SAFE_INTEGER + Number.EPSILON)).toThrow(err);
+    expect(() => Base64x.fromSeed(0.1)).toThrow(err);
+    expect(() => Base64x.fromSeed(-0.1)).toThrow(err);
+    expect(() => Base64x.fromSeed(0)).toThrow(err);
+    expect(() => Base64x.fromSeed(-0)).toThrow(err);
+    expect(() => Base64x.fromSeed(1 + Math.random())).toThrow(err);
+
+    // valid values
+    expect(() => Base64x.fromSeed(Number.MAX_SAFE_INTEGER - 1)).not.toThrow();
+    expect(() => Base64x.fromSeed(1)).not.toThrow();
+  });
+
+  test('consistent encode/decode given seed ctor', () => {
+    const rawString = 'אלעד';
+    const seed = parseInt((Math.random() * 100000000).toFixed(0));
+    const s1 = Base64x.fromSeed(seed);
+    const s2 = Base64x.fromSeed(seed);
+    expect(s2.decode(s1.encode(rawString))).toStrictEqual(rawString);
   });
 
 });
