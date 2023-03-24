@@ -1,7 +1,7 @@
 type StringTransformer = (input: string) => string;
-
-const base64Encode: StringTransformer = ((data: string) => Buffer.from(data, 'utf8').toString('base64'));
-const base64Decode: StringTransformer = ((data: string) => Buffer.from(data, 'base64').toString('utf8'));
+const isNode = typeof process != "undefined" && process?.versions?.node != null;
+const base64Encode: StringTransformer = isNode ? ((data: string) => Buffer.from(data, 'utf8').toString('base64')) : btoa;
+const base64Decode: StringTransformer = isNode ? ((data: string) => Buffer.from(data, 'base64').toString('utf8')) : atob;
 
 // @see: https://datatracker.ietf.org/doc/html/rfc4648#section-5
 const RFC4648_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
